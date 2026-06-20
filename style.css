@@ -69,3 +69,8 @@ body {
   background: #d32f2f;
   cursor: not-allowed;
 }
+
+.slot-btn.past {
+  background: #9e9e9e;
+  cursor: not-allowed;
+}
