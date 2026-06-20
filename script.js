@@ -2,9 +2,9 @@ function getUser() {
   return JSON.parse(localStorage.getItem("user"));
 }
 
-const user = getUser();
+const currentUser = getUser();
 
-if (!user) {
+if (!currentUser) {
   window.location.href = "login.html";
 }
 
@@ -34,6 +34,7 @@ function createSlots() {
 }
 
 async function loadReservations() {
+  const user = getUser();
 
   let query = supabaseClient
     .from("reservations")
@@ -146,6 +147,7 @@ async function getUserWeeklyReservations(userId) {
 }
 
 async function render() {
+  const user = getUser();
 
   const reservations = await loadReservations();
 
