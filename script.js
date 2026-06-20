@@ -149,10 +149,22 @@ async function getUserWeeklyReservations(userId) {
 
 async function render() {
   const user = getUser();
-
   const reservations = await loadReservations();
 
   calendar.innerHTML = "";
+
+  const slots = createSlots();
+
+  const table = calendar;
+
+  // Cabeçalho
+  const headerRow = document.createElement("tr");
+
+  const emptyCorner = document.createElement("th");
+  emptyCorner.textContent = "Hora";
+  headerRow.appendChild(emptyCorner);
+
+  const days = [];
 
   for (let i = 0; i <= DAYS; i++) {
 
@@ -161,40 +173,62 @@ async function render() {
 
     const dateStr = formatDate(date);
 
-    const day = document.createElement("div");
-    day.className = "day";
+    days.push(dateStr);
 
-    const title = document.createElement("h2");
-    title.textContent = date.toDateString();
+    const th = document.createElement("th");
 
-    day.appendChild(title);
+    th.innerHTML =
+      `${date.toLocaleDateString("pt-PT", {
+        weekday: "short"
+      })}<br>${date.toLocaleDateString("pt-PT")}`;
 
-    const slotsDiv = document.createElement("div");
-    slotsDiv.className = "slots";
+    headerRow.appendChild(th);
+  }
 
-    for (const time of createSlots()) {
+  table.appendChild(headerRow);
+
+  // Linhas das horas
+  for (const time of slots) {
+
+    const row = document.createElement("tr");
+
+    const timeCell = document.createElement("td");
+    timeCell.textContent = time;
+    timeCell.className = "time-column";
+
+    row.appendChild(timeCell);
+
+    for (const date of days) {
 
       const booked = reservations.find(
-        r => r.date === dateStr && r.time === time
+        r => r.date === date && r.time === time
       );
+
+      const cell = document.createElement("td");
 
       const btn = document.createElement("button");
 
-      btn.textContent = time;
-      btn.className = "slot";
+      btn.className = "slot-btn";
 
       if (booked) {
+
+        btn.textContent = "✕";
         btn.classList.add("booked");
         btn.disabled = true;
+
       } else {
-        btn.onclick = () => bookSlot(dateStr, time);
+
+        btn.textContent = "✓";
+        btn.onclick = () => bookSlot(date, time);
+
       }
 
-      slotsDiv.appendChild(btn);
+      cell.appendChild(btn);
+
+      row.appendChild(cell);
     }
 
-    day.appendChild(slotsDiv);
-    calendar.appendChild(day);
+    table.appendChild(row);
   }
 }
 
