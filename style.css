@@ -1,34 +1,20 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
 body {
-  font-family: Arial, sans-serif;
+  font-family: Arial;
   background: #f4f4f4;
+  margin: 0;
   padding: 20px;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: auto;
-}
-
-h1 {
-  text-align: center;
-  margin-bottom: 30px;
 }
 
 .day {
   background: white;
   padding: 15px;
-  border-radius: 10px;
   margin-bottom: 20px;
-}
-
-.day h2 {
-  margin-bottom: 15px;
+  border-radius: 10px;
 }
 
 .slots {
@@ -38,23 +24,15 @@ h1 {
 }
 
 .slot {
+  padding: 10px;
   border: none;
-  padding: 10px 14px;
-  border-radius: 6px;
   cursor: pointer;
   background: #4caf50;
   color: white;
-}
-
-.slot:hover {
-  opacity: 0.9;
+  border-radius: 5px;
 }
 
 .slot.booked {
   background: #d32f2f;
   cursor: not-allowed;
-}
-
-.slot.booking {
-  background: #1976d2;
 }
