@@ -12,7 +12,7 @@ const calendar = document.getElementById("calendar");
 
 const OPEN_HOUR = 8;
 const CLOSE_HOUR = 22;
-const DAYS = 5;
+const DAYS = 13;
 
 function logout() {
   localStorage.removeItem("user");
