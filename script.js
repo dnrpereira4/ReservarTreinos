@@ -12,7 +12,7 @@ const calendar = document.getElementById("calendar");
 
 const OPEN_HOUR = 8;
 const CLOSE_HOUR = 22;
-const DAYS = 15;
+const DAYS = 13;
 
 function logout() {
   localStorage.removeItem("user");
@@ -36,18 +36,16 @@ function createSlots() {
 
 async function loadReservations() {
   const user = getUser();
-
-  let query = supabaseClient
+  const { data, error } = await supabaseClient
     .from("reservations")
     .select("*");
 
-  if (user.role !== "admin") {
-    query = query.eq("user_id", user.id);
+  if (error) {
+    console.error(error);
+    return [];
   }
 
-  const { data } = await query;
-
-  return data || [];
+  return data;
 }
 
 async function bookSlot(date, time) {
