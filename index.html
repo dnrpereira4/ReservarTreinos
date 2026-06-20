@@ -1,50 +1,24 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Marcação de Treinos</title>
+  <title>Reservas</title>
 
-<style>
-body{
-    font-family: Arial, sans-serif;
-    max-width: 800px;
-    margin:auto;
-    padding:40px;
-    text-align:center;
-}
+  <link rel="stylesheet" href="style.css">
 
-h1{
-    color:#333;
-}
-
-.botao{
-    display:inline-block;
-    background:#0066ff;
-    color:white;
-    padding:15px 30px;
-    text-decoration:none;
-    border-radius:8px;
-    font-size:18px;
-}
-</style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script defer src="script.js"></script>
 </head>
-
 <body>
 
-<h1>Marcação de Treinos</h1>
+  <div class="container">
+    <h1>Reservar Horário</h1>
 
-<p>
-Escolhe um horário disponível para o teu treino.
-</p>
-
-<a
-class="botao"
-href="https://calendly.com/dnrpereira4/60-min-training"
-target="_blank">
-Marcar Treino
-</a>
+    <div id="calendar"></div>
+  </div>
 
 </body>
 </html>
