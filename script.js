@@ -208,19 +208,30 @@ async function render() {
 
       btn.className = "slot-btn";
 
+      const now = new Date();
+
+      const slotDateTime = new Date(`${date}T${time}:00`);
+      
+      const pastSlot = slotDateTime < now;
+      
       if (booked) {
 
-        btn.textContent = "✕";
-        btn.classList.add("booked");
+      btn.textContent = "✕";
+      btn.classList.add("booked");
+      btn.disabled = true;
+    
+      } else if (pastSlot) {
+      
+        btn.textContent = "-";
+        btn.classList.add("past");
         btn.disabled = true;
-
+      
       } else {
-
+      
         btn.textContent = "✓";
-        btn.onclick = () => bookSlot(date, time);
-
+        btn.onclick = () => bookSlot(date, time);    
       }
-
+      
       cell.appendChild(btn);
 
       row.appendChild(cell);
