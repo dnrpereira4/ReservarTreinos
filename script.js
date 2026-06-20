@@ -110,19 +110,37 @@ function getWeekRange(date) {
 
 async function getUserWeeklyReservations(userId) {
 
-  const { monday, sunday } = getWeekRange(new Date());
+  const now = new Date();
+
+  const day = now.getDay();
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+
+  const monday = new Date(now);
+  monday.setDate(diff);
+  monday.setHours(0,0,0,0);
+
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  sunday.setHours(23,59,59,999);
+
+  const start = monday.toISOString().split("T")[0];
+  const end = sunday.toISOString().split("T")[0];
+
+  console.log("SEMANA:", start, "→", end);
 
   const { data, error } = await supabaseClient
     .from("reservations")
-    .select("*")
+    .select("id")
     .eq("user_id", userId)
-    .gte("date", monday)
-    .lte("date", sunday);
+    .gte("date", start)
+    .lte("date", end);
 
   if (error) {
     console.error(error);
     return 0;
   }
+
+  console.log("RESERVAS DETETADAS:", data.length);
 
   return data.length;
 }
