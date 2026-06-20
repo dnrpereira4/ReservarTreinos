@@ -12,53 +12,59 @@ const calendar = document.getElementById("calendar");
 
 const OPEN_HOUR = 8;
 const CLOSE_HOUR = 22;
-const DAYS_AHEAD = 15;
+const DAYS = 15;
 
-async function loadReservations() {
-
-  const { data, error } = await supabaseClient
-    .from("reservations")
-    .select("*");
-
-  if (error) {
-    console.error(error);
-    return [];
-  }
-
-  return data;
+function logout() {
+  localStorage.removeItem("user");
+  window.location.href = "login.html";
 }
 
 function formatDate(date) {
   return date.toISOString().split("T")[0];
 }
 
-function createHourSlots() {
-
+function createSlots() {
   const slots = [];
 
   for (let h = OPEN_HOUR; h < CLOSE_HOUR; h++) {
-
-    slots.push(
-      `${String(h).padStart(2, "0")}:00`
-    );
+    slots.push(`${String(h).padStart(2, "0")}:00`);
   }
 
   return slots;
 }
 
+async function loadReservations() {
+
+  let query = supabaseClient
+    .from("reservations")
+    .select("*");
+
+  if (user.role !== "admin") {
+    query = query.eq("user_id", user.id);
+  }
+
+  const { data } = await query;
+
+  return data || [];
+}
+
 async function bookSlot(date, time) {
 
-  const name = prompt("Nome:");
+  const user = getUser();
 
-  if (!name) return;
+  if (!user) {
+    alert("Faz login primeiro");
+    window.location.href = "login.html";
+    return;
+  }
 
   const { error } = await supabaseClient
     .from("reservations")
     .insert([
       {
+        user_id: user.id,
         date,
-        time,
-        name
+        time
       }
     ]);
 
@@ -68,73 +74,57 @@ async function bookSlot(date, time) {
     return;
   }
 
-  alert("Reserva criada!");
-
+  alert("Reserva feita!");
   render();
 }
 
 async function render() {
 
-  calendar.innerHTML = "";
-
   const reservations = await loadReservations();
 
-  for (let i = 0; i <= DAYS_AHEAD; i++) {
+  calendar.innerHTML = "";
+
+  for (let i = 0; i <= DAYS; i++) {
 
     const date = new Date();
-
     date.setDate(date.getDate() + i);
 
-    const dateString = formatDate(date);
+    const dateStr = formatDate(date);
 
-    const dayDiv = document.createElement("div");
-    dayDiv.className = "day";
+    const day = document.createElement("div");
+    day.className = "day";
 
     const title = document.createElement("h2");
-    title.textContent =
-      date.toLocaleDateString("pt-PT", {
-        weekday: "long",
-        day: "numeric",
-        month: "long"
-      });
+    title.textContent = date.toDateString();
 
-    dayDiv.appendChild(title);
+    day.appendChild(title);
 
     const slotsDiv = document.createElement("div");
     slotsDiv.className = "slots";
 
-    for (const time of createHourSlots()) {
+    for (const time of createSlots()) {
 
       const booked = reservations.find(
-        r =>
-          r.date === dateString &&
-          r.time === time
+        r => r.date === dateStr && r.time === time
       );
 
-      const button = document.createElement("button");
+      const btn = document.createElement("button");
 
-      button.textContent = time;
-
-      button.className = "slot";
+      btn.textContent = time;
+      btn.className = "slot";
 
       if (booked) {
-
-        button.classList.add("booked");
-
-        button.disabled = true;
-
+        btn.classList.add("booked");
+        btn.disabled = true;
       } else {
-
-        button.onclick = () =>
-          bookSlot(dateString, time);
+        btn.onclick = () => bookSlot(dateStr, time);
       }
 
-      slotsDiv.appendChild(button);
+      slotsDiv.appendChild(btn);
     }
 
-    dayDiv.appendChild(slotsDiv);
-
-    calendar.appendChild(dayDiv);
+    day.appendChild(slotsDiv);
+    calendar.appendChild(day);
   }
 }
 
