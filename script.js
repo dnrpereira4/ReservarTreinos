@@ -58,14 +58,17 @@ async function bookSlot(date, time) {
     return;
   }
 
-  const used = await getUserWeeklyReservations(user.id);
-
-  console.log("USADO ESTA SEMANA:", used);
-  console.log("LIMITE:", user.sessions_per_week);
-
-  if (used >= user.sessions_per_week) {
-    alert("Já atingiste o limite de treinos desta semana");
-    return;
+  if (user.role !== "admin") {
+    const used = await getUserWeeklyReservations(user.id);
+  
+    console.log("USADO ESTA SEMANA:", used);
+    console.log("LIMITE:", user.sessions_per_week);
+  
+    if (used >= user.sessions_per_week) {
+      alert(`Já utilizaste as ${user.sessions_per_week} reservas desta semana.`);
+      return;
+    }
+  
   }
 
   const { error } = await supabaseClient
@@ -89,13 +92,15 @@ async function bookSlot(date, time) {
 }
 
 function getWeekRange(date) {
+
   const d = new Date(date);
 
-  const day = d.getDay(); // 0 domingo
+  const day = d.getDay();
 
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  const mondayOffset = day === 0 ? -6 : 1 - day;
 
-  const monday = new Date(d.setDate(diff));
+  const monday = new Date(d);
+  monday.setDate(d.getDate() + mondayOffset);
   monday.setHours(0,0,0,0);
 
   const sunday = new Date(monday);
@@ -108,39 +113,21 @@ function getWeekRange(date) {
   };
 }
 
-async function getUserWeeklyReservations(userId) {
+async function getUserWeeklyReservations(userId, reservationDate) {
 
-  const now = new Date();
-
-  const day = now.getDay();
-  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-
-  const monday = new Date(now);
-  monday.setDate(diff);
-  monday.setHours(0,0,0,0);
-
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
-  sunday.setHours(23,59,59,999);
-
-  const start = monday.toISOString().split("T")[0];
-  const end = sunday.toISOString().split("T")[0];
-
-  console.log("SEMANA:", start, "→", end);
+  const { monday, sunday } = getWeekRange(reservationDate);
 
   const { data, error } = await supabaseClient
     .from("reservations")
     .select("id")
     .eq("user_id", userId)
-    .gte("date", start)
-    .lte("date", end);
+    .gte("date", monday)
+    .lte("date", sunday);
 
   if (error) {
     console.error(error);
     return 0;
   }
-
-  console.log("RESERVAS DETETADAS:", data.length);
 
   return data.length;
 }
