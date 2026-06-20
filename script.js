@@ -60,6 +60,9 @@ async function bookSlot(date, time) {
 
   const used = await getUserWeeklyReservations(user.id);
 
+  console.log("USADO ESTA SEMANA:", used);
+  console.log("LIMITE:", user.sessions_per_week);
+
   if (used >= user.sessions_per_week) {
     alert("Já atingiste o limite de treinos desta semana");
     return;
@@ -86,32 +89,35 @@ async function bookSlot(date, time) {
 }
 
 function getWeekRange(date) {
-  const start = new Date(date);
-  const day = start.getDay();
+  const d = new Date(date);
 
-  const diffToMonday = start.getDate() - day + (day === 0 ? -6 : 1);
+  const day = d.getDay(); // 0 domingo
 
-  const monday = new Date(start.setDate(diffToMonday));
-  monday.setHours(0, 0, 0, 0);
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+
+  const monday = new Date(d.setDate(diff));
+  monday.setHours(0,0,0,0);
 
   const sunday = new Date(monday);
   sunday.setDate(monday.getDate() + 6);
-  sunday.setHours(23, 59, 59, 999);
+  sunday.setHours(23,59,59,999);
 
-  return { monday, sunday };
+  return {
+    monday: monday.toISOString().split("T")[0],
+    sunday: sunday.toISOString().split("T")[0]
+  };
 }
 
 async function getUserWeeklyReservations(userId) {
 
-  const now = new Date();
-  const { monday, sunday } = getWeekRange(now);
+  const { monday, sunday } = getWeekRange(new Date());
 
   const { data, error } = await supabaseClient
     .from("reservations")
     .select("*")
     .eq("user_id", userId)
-    .gte("date", monday.toISOString().split("T")[0])
-    .lte("date", sunday.toISOString().split("T")[0]);
+    .gte("date", monday)
+    .lte("date", sunday);
 
   if (error) {
     console.error(error);
