@@ -200,10 +200,11 @@ async function render() {
       const slotDateTime = new Date(`${date}T${time}:00`);
       
       const pastSlot = slotDateTime < now;
+
+      btn.textContent = time;
       
       if (booked) {
 
-      btn.textContent = "✕";
       btn.classList.add("booked");
       btn.disabled = true;
     
@@ -215,7 +216,6 @@ async function render() {
       
       } else {
       
-        btn.textContent = "✓";
         btn.onclick = () => bookSlot(date, time);    
       }
       
