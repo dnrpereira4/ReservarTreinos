@@ -1,3 +1,13 @@
+function getUser() {
+  return JSON.parse(localStorage.getItem("user"));
+}
+
+const user = getUser();
+
+if (!user) {
+  window.location.href = "login.html";
+}
+
 const calendar = document.getElementById("calendar");
 
 const OPEN_HOUR = 8;
