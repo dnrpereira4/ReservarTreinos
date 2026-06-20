@@ -28,6 +28,7 @@ function createSlots() {
 
   for (let h = OPEN_HOUR; h < CLOSE_HOUR; h++) {
     slots.push(`${String(h).padStart(2, "0")}:00`);
+    slots.push(`${String(h).padStart(2, "0")}:30`);
   }
 
   return slots;
