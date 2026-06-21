@@ -195,8 +195,21 @@ function renderReservations(reservations) {
 
     row.innerHTML = `
       <td>${r.date}</td>
+
       <td>${r.time}</td>
+
       <td>${r.users?.username || "-"}</td>
+
+      <td>
+
+        <button
+          onclick="deleteReservation(${r.id})">
+
+          Apagar
+
+        </button>
+
+      </td>
     `;
 
     tbody.appendChild(row);
@@ -209,14 +222,15 @@ async function loadReservations() {
   const { data, error } = await supabaseClient
     .from("reservations")
     .select(`
+      id,
       date,
       time,
       users (
         username
       )
     `)
-    .order("date", { ascending: true })
-    .order("time", { ascending: true });
+    .order("date")
+    .order("time");
 
   if (error) {
     console.error(error);
@@ -224,6 +238,26 @@ async function loadReservations() {
   }
 
   renderReservations(data);
+}
+
+async function deleteReservation(id) {
+
+  if (!confirm("Apagar reserva?")) {
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("reservations")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    console.error(error);
+    alert(error.message);
+    return;
+  }
+
+  loadReservations();
 }
 
 loadUsers();
