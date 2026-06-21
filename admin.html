@@ -37,25 +37,27 @@
   <hr>
 
   <h2>Utilizadores</h2>
-
-  <table id="usersTable">
-  <thead>
-    <tr>
-      <th>Username</th>
-      <th>Password</th>
-      <th>Role</th>
-      <th>Sessões</th>
-      <th>Ações</th>
-    </tr>
-  </thead>
-
-  <tbody></tbody>
-</table>
+  <div class="table-container">
+    <table id="usersTable">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Password</th>
+        <th>Role</th>
+        <th>Sessões</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+      
+  
+    <tbody></tbody>
+  </table>
+  </div>
 
   <hr>
 
 <h2>Reservas</h2>
-
+<div class="table-container">
 <table id="reservationsTable">
 
   <thead>
@@ -63,12 +65,14 @@
       <th>Data</th>
       <th>Hora</th>
       <th>Utilizador</th>
+      <th>Ações</th>
     </tr>
   </thead>
 
   <tbody></tbody>
 
 </table>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script src="admin.js"></script>
