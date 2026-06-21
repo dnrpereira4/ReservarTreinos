@@ -182,4 +182,26 @@ async function deleteUser(id) {
   loadUsers();
 }
 
+async function loadReservations() {
+
+  const { data, error } = await supabaseClient
+    .from("reservations")
+    .select(`
+      date,
+      time,
+      users (
+        username
+      )
+    `)
+    .order("date", { ascending: true })
+    .order("time", { ascending: true });
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  renderReservations(data);
+}
+
 loadUsers();
