@@ -59,7 +59,7 @@ async function bookSlot(date, time) {
   }
 
   if (user.role !== "admin") {
-    const used = await getUserWeeklyReservations(user.id);
+    const used = await getUserWeeklyReservations(user.id, date);
   
     console.log("USADO ESTA SEMANA:", used);
     console.log("LIMITE:", user.sessions_per_week);
