@@ -5,3 +5,158 @@ const supabaseClient = supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
+
+const user = JSON.parse(localStorage.getItem("user"));
+
+if (!user || user.role !== "admin") {
+  window.location.href = "index.html";
+}
+
+async function loadUsers() {
+
+  const { data, error } = await supabaseClient
+    .from("users")
+    .select("*")
+    .order("id");
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  renderUsers(data);
+}
+
+function renderUsers(users) {
+
+  const tbody =
+    document.querySelector("#usersTable tbody");
+
+  tbody.innerHTML = "";
+
+  users.forEach(u => {
+
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td>${u.username}</td>
+
+      <td>
+        <input
+          value="${u.role}"
+          data-id="${u.id}"
+          class="role">
+      </td>
+
+      <td>
+        <input
+          type="number"
+          value="${u.sessions_per_week}"
+          data-id="${u.id}"
+          class="sessions">
+      </td>
+
+      <td>
+
+        <button onclick="updateUser(${u.id})">
+          Guardar
+        </button>
+
+        <button onclick="deleteUser(${u.id})">
+          Apagar
+        </button>
+
+      </td>
+    `;
+
+    tbody.appendChild(row);
+
+  });
+}
+
+async function createUser() {
+
+  const username =
+    document.getElementById("username").value;
+
+  const password =
+    document.getElementById("password").value;
+
+  const role =
+    document.getElementById("role").value;
+
+  const sessions =
+    Number(document.getElementById("sessions").value);
+
+  const { error } = await supabaseClient
+    .from("users")
+    .insert([
+      {
+        username,
+        password,
+        role,
+        sessions_per_week: sessions
+      }
+    ]);
+
+  if (error) {
+    console.error(error);
+    alert(error.message);
+    return;
+  }
+
+  loadUsers();
+}
+
+async function updateUser(id) {
+
+  const row =
+    [...document.querySelectorAll("tr")]
+    .find(r =>
+      r.innerHTML.includes(`updateUser(${id})`)
+    );
+
+  const role =
+    row.querySelector(".role").value;
+
+  const sessions =
+    Number(
+      row.querySelector(".sessions").value
+    );
+
+  const { error } = await supabaseClient
+    .from("users")
+    .update({
+      role,
+      sessions_per_week: sessions
+    })
+    .eq("id", id);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  alert("Guardado");
+}
+
+async function deleteUser(id) {
+
+  if (!confirm("Apagar utilizador?")) {
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("users")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  loadUsers();
+}
+
+loadUsers();
