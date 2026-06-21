@@ -182,6 +182,28 @@ async function deleteUser(id) {
   loadUsers();
 }
 
+function renderReservations(reservations) {
+
+  const tbody =
+    document.querySelector("#reservationsTable tbody");
+
+  tbody.innerHTML = "";
+
+  reservations.forEach(r => {
+
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td>${r.date}</td>
+      <td>${r.time}</td>
+      <td>${r.users?.username || "-"}</td>
+    `;
+
+    tbody.appendChild(row);
+
+  });
+}
+
 async function loadReservations() {
 
   const { data, error } = await supabaseClient
@@ -205,3 +227,4 @@ async function loadReservations() {
 }
 
 loadUsers();
+loadReservations();
