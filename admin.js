@@ -43,6 +43,13 @@ function renderUsers(users) {
 
       <td>
         <input
+          value="${u.password}"
+          data-id="${u.id}"
+          class="password">
+      </td>
+
+      <td>
+        <input
           value="${u.role}"
           data-id="${u.id}"
           class="role">
@@ -123,9 +130,12 @@ async function updateUser(id) {
 
   const row =
     [...document.querySelectorAll("tr")]
-    .find(r =>
-      r.innerHTML.includes(`updateUser(${id})`)
-    );
+      .find(r =>
+        r.innerHTML.includes(`updateUser(${id})`)
+      );
+
+  const password =
+    row.querySelector(".password").value;
 
   const role =
     row.querySelector(".role").value;
@@ -138,6 +148,7 @@ async function updateUser(id) {
   const { error } = await supabaseClient
     .from("users")
     .update({
+      password,
       role,
       sessions_per_week: sessions
     })
@@ -145,6 +156,7 @@ async function updateUser(id) {
 
   if (error) {
     console.error(error);
+    alert(error.message);
     return;
   }
 
