@@ -88,6 +88,17 @@ async function createUser() {
   const sessions =
     Number(document.getElementById("sessions").value);
 
+  const { data: existing } = await supabaseClient
+    .from("users")
+    .select("id")
+    .eq("username", username)
+    .limit(1);
+  
+  if (existing.length > 0) {
+    alert("Já existe um utilizador com esse username.");
+    return;
+  }
+
   const { error } = await supabaseClient
     .from("users")
     .insert([
