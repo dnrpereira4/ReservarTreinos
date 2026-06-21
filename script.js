@@ -230,8 +230,6 @@ async function render() {
 
 render();
 
-const currentUser = getUser();
-
 if (currentUser?.role === "admin") {
 
   document.getElementById("adminButton")
