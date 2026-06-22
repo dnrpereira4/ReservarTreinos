@@ -35,10 +35,15 @@ function createSlots() {
 }
 
 async function loadReservations() {
-  const user = getUser();
+
   const { data, error } = await supabaseClient
     .from("reservations")
-    .select("*");
+    .select(`
+      *,
+      users (
+        username
+      )
+    `);
 
   if (error) {
     console.error(error);
@@ -205,10 +210,13 @@ async function render() {
       
       if (booked) {
 
+      btn.textContent =
+        booked.users?.username || "Reservado";
+    
       btn.classList.add("booked");
       btn.disabled = true;
     
-      } else if (pastSlot) {
+    } else if (pastSlot) {
       
         btn.textContent = "-";
         btn.classList.add("past");
@@ -216,7 +224,18 @@ async function render() {
       
       } else {
       
-        btn.onclick = () => bookSlot(date, time);    
+        btn.onclick = async () => {
+
+        const confirmed = confirm(
+          `Confirmar reserva para ${date} às ${time}?`
+        );
+      
+          if (!confirmed) {
+            return;
+          }
+        
+          await bookSlot(date, time);
+        }; 
       }
       
       cell.appendChild(btn);
