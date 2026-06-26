@@ -219,12 +219,13 @@ async function render() {
        else if (booked) {
 
         if (booked.users?.role === "admin") {
-          btn.textContent = "Indisponível";
+          btn.textContent = "-";
+          btn.classList.add("past");
         } else {
           btn.textContent = booked.users?.username || "Reservado";
+          btn.classList.add("booked");
         }
       
-        btn.classList.add("booked");
         btn.disabled = true;
       
       } else {
