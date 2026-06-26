@@ -41,7 +41,8 @@ async function loadReservations() {
     .select(`
       *,
       users (
-        username
+        username,
+        role
       )
     `);
 
@@ -207,19 +208,23 @@ async function render() {
       const pastSlot = slotDateTime < now;
 
       btn.textContent = time;
-      
-      if (booked) {
 
-      btn.textContent =
-        booked.users?.username || "Reservado";
-    
-      btn.classList.add("booked");
-      btn.disabled = true;
-    
-    } else if (pastSlot) {
+      if (pastSlot) {
       
         btn.textContent = "-";
         btn.classList.add("past");
+        btn.disabled = true;
+      
+      }
+       else if (booked) {
+
+        if (booked.users?.role === "admin") {
+          btn.textContent = "Indisponível";
+        } else {
+          btn.textContent = booked.users?.username || "Reservado";
+        }
+      
+        btn.classList.add("booked");
         btn.disabled = true;
       
       } else {
