@@ -190,6 +190,22 @@ async function render() {
     row.appendChild(timeCell);
 
     for (const date of days) {
+      const currentDate = new Date(date + "T00:00:00");
+      const isSunday = currentDate.getDay() === 0;
+      
+      const [hour, minute] = time.split(":").map(Number);
+      
+      const sundayAfternoon =
+        isSunday && hour > 13;
+      
+      if (sundayAfternoon) {
+        btn.textContent = "-";
+        btn.classList.add("past");
+        btn.disabled = true;
+        cell.appendChild(btn);
+        row.appendChild(cell);
+        continue;
+      }
 
       const booked = reservations.find(
         r => r.date === date && r.time === time
